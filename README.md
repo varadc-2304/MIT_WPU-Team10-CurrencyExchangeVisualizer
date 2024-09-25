@@ -99,38 +99,34 @@ To run Exchangify locally, follow these steps:
 
 - **Pre-processing**: The preprocessed concatenated dataset in the CSV file was ingested in MongoDB. The schema for the MongoDB documents is provided in [schema.txt](https://github.com/varadc-2304/MIT_WPU-Team10-Exchangify/blob/main/schema.txt).
 
-Preprocessing Steps:
+### Preprocessing Steps:
 
-1] Loading the Data:CSV files from 2012 to 2022 were loaded. The files have varying structures:
-   i.2012 to 2018: 1 date column and 52 countries' exchange rates against USD.
-   ii.2019 to 2021: 1 date column and 38 countries.
-   iii.2022 : 1 date column and 37 countries.
+1. **Loading the Data**: CSV files from 2012 to 2022 were loaded. The files have varying structures:
+   - 2012 to 2018: 1 date column and 52 countries' exchange rates against USD.
+   - 2019 to 2021: 1 date column and 38 countries.
+   - 2022: 1 date column and 37 countries.
    
-2] Handling Missing Values:
-   i.Interpolation:Used the "time" method of interpolation to fill missing values. This method considers the time index for smoothing the missing data across          consecutive dates.
-   ii.Forward Fill (ffill):For any remaining missing values after interpolation, forward fill was applied to propagate the last available valid value forward.
-   iii.Concatenating CSV Files:After handling the missing values, all CSV files from 2012 to 2022 were concatenated into one dataset to ensure consistency for 
-    further processing.
+2. **Handling Missing Values**:
+   - **Interpolation**: Used the "time" method of interpolation to fill missing values. This method considers the time index for smoothing the missing data across consecutive dates.
+   - **Forward Fill (ffill)**: For any remaining missing values after interpolation, forward fill was applied to propagate the last available valid value forward.
+   - **Concatenating CSV Files**: After handling the missing values, all CSV files from 2012 to 2022 were concatenated into one dataset to ensure consistency for further processing.
 
-3] Generating Data for 2023 and 2024:
-   i.Created datasets for 2023 and 2024 with the same structure (date and 37 countries) as the 2022 file.
-   ii.Filling Values:Used interpolation followed by forward fill to populate the values for the 2023 and 2024 data.
+3. **Generating Data for 2023 and 2024**:
+   - Created datasets for 2023 and 2024 with the same structure (date and 37 countries) as the 2022 file.
+   - **Filling Values**: Used interpolation followed by forward fill to populate the values for the 2023 and 2024 data.
    
-4] Adding Missing Dates:
-   i.Checked for and added any missing dates within the timeline from 2012 to 2024 to ensure a continuous, complete date sequence.
-   ii.Once missing dates were added, interpolation and forward fill were re-applied to fill in any new gaps in the data.
+4. **Adding Missing Dates**:
+   - Checked for and added any missing dates within the timeline from 2012 to 2024 to ensure a continuous, complete date sequence.
+   - Once missing dates were added, interpolation and forward fill were re-applied to fill in any new gaps in the data.
    
-5] Handling Null Columns (2019-2024):
-   i.For any remaining null values from 2019 to 2024:
-   ii.Online Research: Checked the historical currency exchange rate graph online for the specific country from 2019 to the present date.
-   iii.Identified key points:
-         a)Exchange rate in 2019.
-         b)Exchange rate at present.
-         c)If a peak or maxima occurred during this period, noted that value.
-   iv.Numpy Linspace: Used numpy.linspace() to generate evenly spaced values between 2019 and the present, ensuring a gradual and realistic progression of       
-       exchange rates. Applied this to interpolate data, including the maxima when applicable.
+5. **Handling Null Columns (2019-2024)**:
+   - For any remaining null values from 2019 to 2024:
+     - **Online Research**: Checked the historical currency exchange rate graph online for the specific country from 2019 to the present date.
+     - Identified key points:
+       - Exchange rate in 2019.
+       - Exchange rate at present.
+       - If a peak or maxima occurred during this period, noted that value.
+     - **Numpy Linspace**: Used numpy.linspace() to generate evenly spaced values between 2019 and the present, ensuring a gradual and realistic progression of exchange rates. Applied this to interpolate data, including the maxima when applicable.
        
-6] Rounding Values:After completing the data filling, all exchange rate values were rounded to match the precision of the original dataset provided for the 
-   earlier years.
-
+6. **Rounding Values**: After completing the data filling, all exchange rate values were rounded to match the precision of the original dataset provided for the earlier years.
 
