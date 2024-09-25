@@ -67,4 +67,4 @@ To run Exchangify locally, follow these steps:
    Pre-processing:
 
    Data Ingestion: 
-   The preprocessed concatenated dataset in the CSV file () was ingested in MongoDB. The schema for the MongoDB documents is provided in schema.txt. 
+   The preprocessed concatenated dataset in the CSV file [here](https://github.com/varadc-2304/MIT_WPU-Team10-Exchangify/blob/main/NEW4_Exchange_Rate_Report_2012_2024.csv) was ingested in MongoDB. The schema for the MongoDB documents is provided in schema.txt. 
