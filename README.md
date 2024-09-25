@@ -53,8 +53,7 @@ Exchangify is a user-friendly platform for managing foreign exchange rates. It f
 ## Installation
 To run Exchangify locally, follow these steps:
 
-1. Clone the repository:
-   ```bash git clone https://github.com/yourusername/MIT_WPU-Team10-Exchangify.git
+1. Clone the repository: git clone https://github.com/yourusername/MIT_WPU-Team10-Exchangify.git
    
 2. cd MIT_WPU-Team10-Exchangify
 
