@@ -66,4 +66,5 @@ To run Exchangify locally, follow these steps:
 
    Pre-processing:
 
-   
+   Data Ingestion: 
+   The preprocessed concatenated dataset in the CSV file () was ingested in MongoDB. The schema for the MongoDB documents is provided in schema.txt. 
