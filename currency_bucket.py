@@ -2,13 +2,11 @@ import streamlit as st
 import requests
 import matplotlib.pyplot as plt
 
-
 # Function to fetch exchange rates
 def fetch_exchange_rates(base_currency):
     url = f"https://v6.exchangerate-api.com/v6/67663e5c57d81adae0ce6789/latest/{base_currency}"
     response = requests.get(url)
     data = response.json()
-    
     return data['conversion_rates']
 
 # List of all currencies
@@ -31,25 +29,19 @@ CURRENCY_LIST = [
     "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TVD", "TWD",
     "TZS", "UAH", "UGX", "UYU", "UZS", "VES", "VND", "VUV", "WST",
     "XAF", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMW", "ZWL"
-] # Your currency list here
-
-
+]
 
 # Streamlit application
 def main():
     st.title("Custom Currency Basket")
 
-    # Input base currency and amount invested
-    col1, col2 = st.columns(2)  # Create two columns for better layout
-    with col1:
-        base_currency = st.selectbox("Select your Base Currency", options=CURRENCY_LIST, index=CURRENCY_LIST.index("INR"))
-    with col2:
-        amount_invested = st.number_input(f"Enter the amount invested in {base_currency}", min_value=0.0, format="%.2f")
+    # Input base currency
+    base_currency = st.selectbox("Select your Base Currency", options=CURRENCY_LIST, index=CURRENCY_LIST.index("INR"))
 
     st.write("---")  # Horizontal line for separation
 
     # Input currency distribution
-    st.write("### Enter the distribution of your investment in different currencies:")
+    st.write("### Create your Custom Currency Basket:")
     currencies = st.multiselect("Select Currencies", options=CURRENCY_LIST, default=["USD"])
     weights = {}
 
@@ -65,44 +57,20 @@ def main():
     elif total_weight < 100 and total_weight > 0:
         st.warning("Total weight is less than 100%. Adjust weights to distribute properly.")
 
-    # Fetch exchange rates and calculate worth of investments in other currencies
-    if st.button("Calculate Worth"):
+    # Fetch exchange rates and calculate worth of investments in the basket
+    if st.button("Calculate Aggregate Worth"):
         exchange_rates = fetch_exchange_rates(base_currency)
-        worths = {}
+        total_worth = 0.0
         
         for currency, weight in weights.items():
-            # Calculate worth of investment in each currency
-            worth = (amount_invested * (weight / 100)) * exchange_rates[currency]
-            worths[currency] = worth
+            # Calculate worth of each currency in the basket
+            if currency in exchange_rates:
+                worth = (weight / 100) * exchange_rates[currency]
+                total_worth += worth
 
         # Display the results
-        st.write("### Worth of investments in different currencies:")
-        for currency, worth in worths.items():
-            st.write(f"{worth:.2f} {currency}")
+        st.write("### Aggregate Worth of your Currency Basket:")
+        st.write(f"Total Worth in {base_currency}: {total_worth:.2f}")
 
-        # Visualization: Line chart for percent distribution
-        if worths:
-            # Prepare data for plotting
-            labels = list(worths.keys())
-            sizes = [weight for weight in weights.values()]
-            amounts = list(worths.values())
-            percentage_distribution = [(weight / total_weight) * 100 for weight in sizes]
-
-            plt.figure(figsize=(10, 6))
-            plt.plot(labels, percentage_distribution, marker='o', linestyle='-', color='b', label='Percent Distribution')
-
-            # Annotate the amounts on the line chart
-            for i, amount in enumerate(amounts):
-                plt.text(labels[i], percentage_distribution[i], f'{amount:.2f}', ha='center', va='bottom')
-
-            plt.title('Investment Percent Distribution by Currency')
-            plt.xlabel('Currency')
-            plt.ylabel('Percentage (%)')
-            plt.xticks(rotation=45)
-            plt.ylim(0, max(percentage_distribution) + 10)  # Give some space above the highest point
-            plt.grid()
-            plt.axhline(0, color='black', linewidth=0.5, ls='--')
-            plt.legend()
-            st.pyplot(plt)  # Render the line chart in the Streamlit app
-            plt.close()  # Close the plot to avoid display issues
-
+if __name__ == "__main__":
+    main()
