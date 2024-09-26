@@ -1,5 +1,9 @@
 # Exchangify
 
+## Deployment
+
+The Exchangify App has been deployed using Streamlit. You can run the app by clicking [here](https://exchangify.streamlit.app/)
+
 ## Abstract
 
 Exchangify is an innovative Streamlit application designed to simplify the management and visualization of currency exchange rates. The application provides users with the ability to track and analyze the worth of investments across various currencies in real time. By leveraging a custom currency bucket feature, users can enter their base currency, distribution preferences, and investment amounts, making informed decisions easier than ever. Whether for personal finance or professional trading, Exchangify is the go-to solution for anyone navigating the complex world of currency exchange.
