@@ -106,9 +106,16 @@ def main():
         else:
             color = 'green'  # Safe
             risk_label = 'Safe'
-
         # Plot the rate
-        plt.plot(filtered_data['Date'], filtered_data['rate'], color=color, label=risk_label)
+        ax = plt.gca()
+
+        # Plot the line
+        ax.plot(filtered_data['Date'], filtered_data['rate'], color=color, linewidth=2, label=risk_label)
+
+        # Customize the color gradient
+        gradient = ax.fill_between(filtered_data['Date'], filtered_data['rate'], color=color, alpha=0.2, label=risk_label,)
+        # Plot the rate
+        #plt.plot(filtered_data['Date'], filtered_data['rate'], color=color, label=risk_label)
         plt.title(f"Exchange Rate from {from_curr} to {to_curr} ({start_date.date()} to {end_date.date()})")
         plt.xlabel("Date")
         plt.ylabel("Exchange Rate")
