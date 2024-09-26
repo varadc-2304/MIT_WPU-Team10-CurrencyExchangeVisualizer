@@ -155,7 +155,7 @@ def main():
     # Currency Calculator
     # Currency Calculator
     with col8:
-        st.header("Currency Calculator")
+        st.header("Currency Converter")
         
         # Extracting currency codes without the extra details
         from_curr_code = re.search(r"\((.*?)\)", from_curr).group(1)
