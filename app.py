@@ -25,7 +25,6 @@ desired_currencies = [
     "GBP", "USD", "UYU", "VES"
 ]
 
-# Set up page layout and branding
 st.set_page_config(layout="wide")
 
 st.markdown(
@@ -53,7 +52,7 @@ def fetch_exchange_rates(base_currency='USD'):
 # Function to prepare data in the required structure
 def prepare_data(data):
     cleaned_data = {
-        'Date': datetime.now().strftime("%Y-%m-%d")  # Store as YYYY-MM-DD string
+        'Date': datetime.now()
     }
     conversion_rates = data['conversion_rates']
     for currency_name, rate in conversion_rates.items():
