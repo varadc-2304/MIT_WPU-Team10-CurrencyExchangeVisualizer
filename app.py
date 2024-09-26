@@ -25,6 +25,7 @@ desired_currencies = [
     "GBP", "USD", "UYU", "VES"
 ]
 
+# Set up page layout and branding
 st.set_page_config(layout="wide")
 
 st.markdown(
@@ -35,9 +36,9 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Function to check if today's data exists in MongoDB
+# Function to check if today's data exists in MongoDB (using date only, not time)
 def check_if_exists(db, collection, date):
-    return collection.find_one({"Date": date}) is not None
+    return collection.find_one({"Date": {"$gte": date, "$lt": date.replace(hour=23, minute=59, second=59)}}) is not None
 
 # Function to fetch exchange rates from the API
 def fetch_exchange_rates(base_currency='USD'):
@@ -49,15 +50,18 @@ def fetch_exchange_rates(base_currency='USD'):
         print("Error fetching exchange rate data.")
         return None
 
-# Function to prepare data in the required structure
+# Function to prepare data in the required structure with ISO 8601 datetime format
 def prepare_data(data):
     cleaned_data = {
-        'Date': datetime.now()
+        'Date': datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)  # Ensure UTC date
     }
     conversion_rates = data['conversion_rates']
+    
+    # Add the conversion rates for the desired currencies
     for currency_name, rate in conversion_rates.items():
         if currency_name in desired_currencies:
             cleaned_data[currency_name] = rate
+    
     return cleaned_data
 
 # Function to insert data into MongoDB
@@ -66,13 +70,13 @@ def insert_data_into_mongodb(data):
     db = client[DATABASE_NAME]
     collection = db[COLLECTION_NAME]
 
-    today_date = datetime.now().strftime("%Y-%m-%d")
+    today_date = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)  # Today at 00:00:00 UTC
     if check_if_exists(db, collection, today_date):
-        print(f"Data for {today_date} already exists in the database.")
+        print(f"Data for today already exists in the database.")
     else:
         if len(data) > 1:
             collection.insert_one(data)
-            print(f"Data inserted successfully for {today_date} into MongoDB.")
+            print(f"Data inserted successfully into MongoDB.")
         else:
             print("No desired currencies found to insert.")
 
