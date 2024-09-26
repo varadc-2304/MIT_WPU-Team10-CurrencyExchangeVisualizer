@@ -12,7 +12,7 @@ import exchange_rate
 # MongoDB connection details
 MONGO_URI = "mongodb+srv://varad:qwerty123@nt-hackathon.a7lhy.mongodb.net/"
 DATABASE_NAME = "currency_exchange"
-COLLECTION_NAME = "rate"
+COLLECTION_NAME = "rate_new"
 
 # List of currency codes you want to insert (filter from the fetched data)
 desired_currencies = [
