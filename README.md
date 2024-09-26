@@ -2,7 +2,7 @@
 
 ## Deployment
 
-The Exchangify App has been deployed using Streamlit. You can run the app by clicking [here](https://exchangify.streamlit.app/)
+The Exchangify App has been deployed using Streamlit. You can run the app by clicking [here](https://exchangify.streamlit.app/).
 
 ## Abstract
 
