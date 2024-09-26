@@ -1,7 +1,13 @@
+import streamlit as st
 from pymongo import MongoClient
 from datetime import datetime
 import requests
-import streamlit as st
+
+# Importing your modules
+import dashboard
+import currency_bucket
+import forex_rates
+import exchange_rate
 
 # MongoDB connection details
 MONGO_URI = "mongodb+srv://varad:qwerty123@nt-hackathon.a7lhy.mongodb.net/"
@@ -19,6 +25,21 @@ desired_currencies = [
     "GBP", "USD", "UYU", "VES"
 ]
 
+# Set up page layout and branding
+st.set_page_config(layout="wide")
+
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #4CAF50;'>Exchangify</h1>
+    <h5 style='text-align: center; color: #888;'>Navigate the World of Currency with Ease</h5>
+    """,
+    unsafe_allow_html=True
+)
+
+# Function to check if today's data exists in MongoDB (using date only, not time)
+def check_if_exists(db, collection, date):
+    return collection.find_one({"Date": {"$gte": date, "$lt": date.replace(hour=23, minute=59, second=59)}}) is not None
+
 # Function to fetch exchange rates from the API
 def fetch_exchange_rates(base_currency='USD'):
     url = f'https://v6.exchangerate-api.com/v6/67663e5c57d81adae0ce6789/latest/{base_currency}'
@@ -26,22 +47,21 @@ def fetch_exchange_rates(base_currency='USD'):
     if response.status_code == 200:
         return response.json()
     else:
-        st.error("Error fetching exchange rate data.")
+        print("Error fetching exchange rate data.")
         return None
 
-# Function to prepare data in the required structure
+# Function to prepare data in the required structure with ISO 8601 datetime format
 def prepare_data(data):
     cleaned_data = {
-        'Date': datetime.now()  # Set the current date
+        'Date': datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)  # Ensure UTC date
     }
-
-    # Populate the cleaned data with currency rates
     conversion_rates = data['conversion_rates']
-    for currency_code, rate in conversion_rates.items():
-        if currency_code in desired_currencies:
-            currency_name = f"{data['conversion_rates'].get(currency_code, currency_code)} ({currency_code})"
+    
+    # Add the conversion rates for the desired currencies
+    for currency_name, rate in conversion_rates.items():
+        if currency_name in desired_currencies:
             cleaned_data[currency_name] = rate
-
+    
     return cleaned_data
 
 # Function to insert data into MongoDB
@@ -50,29 +70,22 @@ def insert_data_into_mongodb(data):
     db = client[DATABASE_NAME]
     collection = db[COLLECTION_NAME]
 
-    # Check if today's date data already exists
-    existing_entry = collection.find_one({
-        'Date': {
-            '$gte': datetime.combine(datetime.now().date(), datetime.min.time()),
-            '$lt': datetime.combine(datetime.now().date(), datetime.max.time())
-        }
-    })
-
-    # If the entry doesn't exist, insert it
-    if existing_entry:
-        st.info("Today's exchange rate data already exists in the database.")
+    today_date = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)  # Today at 00:00:00 UTC
+    if check_if_exists(db, collection, today_date):
+        print(f"Data for today already exists in the database.")
     else:
-        collection.insert_one(data)
-        st.success("Data inserted successfully into MongoDB.")
+        if len(data) > 1:
+            collection.insert_one(data)
+            print(f"Data inserted successfully into MongoDB.")
+        else:
+            print("No desired currencies found to insert.")
 
-# Fetch, prepare, and insert the data
-def update_exchange_rate_data():
+# Wrapper function to check and insert today's rates when navigating to specific tabs
+def check_and_update_rates():
     exchange_data = fetch_exchange_rates('USD')
-
     if exchange_data:
         prepared_data = prepare_data(exchange_data)
         insert_data_into_mongodb(prepared_data)
-
 
 # Define a function to display content based on the selected tab
 def display_page(tab):
