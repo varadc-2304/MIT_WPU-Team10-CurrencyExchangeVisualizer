@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 # MongoDB client setup
 client = pymongo.MongoClient("mongodb+srv://vansh:qwerty123@nt-hackathon.a7lhy.mongodb.net/")
 db = client["currency_exchange"]
-st.set_page_config(layout="wide")
 # Fetch currency list from MongoDB
 get_currencies = db.rate_new.find({}, {"_id": 0})
 currencies = pd.DataFrame(list(get_currencies))
