@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # MongoDB client setup
 client = pymongo.MongoClient("mongodb+srv://vansh:qwerty123@nt-hackathon.a7lhy.mongodb.net/")
 db = client["currency_exchange"]
-
+st.set_page_config(layout="wide")
 # Fetch currency list from MongoDB
 get_currencies = db.rate_new.find({}, {"_id": 0})
 currencies = pd.DataFrame(list(get_currencies))
@@ -90,8 +90,6 @@ def main():
         else:
             filtered_data["rate"] = 1  # Same currency case
 
-        # Create a plot
-        plt.figure(figsize=(10, 5))
 
         # Calculate standard deviation
         rate_std = filtered_data["rate"].std()
@@ -107,25 +105,26 @@ def main():
             color = 'green'  # Safe
             risk_label = 'Safe'
         # Plot the rate
-        ax = plt.gca()
+        col10,col11=st.columns(2)
+        with col10:
+            ax = plt.gca()
 
-        # Plot the line
-        ax.plot(filtered_data['Date'], filtered_data['rate'], color=color, linewidth=2, label=risk_label)
+            # Plot the line
+            ax.plot(filtered_data['Date'], filtered_data['rate'], color=color, linewidth=2, label=risk_label)
 
-        # Customize the color gradient
-        gradient = ax.fill_between(filtered_data['Date'], filtered_data['rate'], color=color, alpha=0.2, label=risk_label,)
-        # Plot the rate
-        #plt.plot(filtered_data['Date'], filtered_data['rate'], color=color, label=risk_label)
-        plt.title(f"Exchange Rate from {from_curr} to {to_curr} ({start_date.date()} to {end_date.date()})")
-        plt.xlabel("Date")
-        plt.ylabel("Exchange Rate")
-        plt.grid()
+            # Customize the color gradient
+            gradient = ax.fill_between(filtered_data['Date'], filtered_data['rate'], color=color, alpha=0.2, label=risk_label)
+            plt.title(f"Exchange Rate from {from_curr} to {to_curr} ({start_date.date()} to {end_date.date()})")
+            plt.xlabel("Date")
+            plt.xticks(rotation=45)
+            plt.ylabel("Exchange Rate")
+            plt.grid()
 
-        # Add the legend
-        plt.legend(title="Risk Level", loc='upper left', fontsize='medium', bbox_to_anchor=(1, 1))
+            # Add the legend
+            plt.legend(title="Risk Level", loc='upper left', fontsize='medium', bbox_to_anchor=(1, 1))
 
-        # Display the plot in Streamlit
-        st.pyplot(plt)
+            # Display the plot in Streamlit
+            st.pyplot(plt)
 
         # Display statistics
         max_rate_index = filtered_data["rate"].idxmax()
@@ -139,39 +138,36 @@ def main():
         avg_rate = filtered_data["rate"].mean()
         start_rate = filtered_data.iloc[0]["rate"] if not filtered_data.empty else None
         end_rate = filtered_data.iloc[-1]["rate"] if not filtered_data.empty else None
-        pct_change = ((end_rate - start_rate) / start_rate * 100) if start_rate and end_rate else None
+        pct_change = ((end_rate - start_rate) / start_rate * 100) if start_rate and end_rate else None#st.warning("No data availabe either for start or end date")
 
-        col8, col9 = st.columns(2)
-        with col9:
-            st.header("Statistics")
-            st.write(f"Max Rate: {max_rate:.2f} On Date: {max_rate_date}")
-            st.write(f"Min Rate: {min_rate:.2f} On Date: {min_rate_date}")
-            st.write(f"Average Rate: {avg_rate:.2f}")
-            st.write(f"Percentage Change: {pct_change:.2f}%" if pct_change is not None else "N/A")
+        with col11:
+            container3=st.container()
+            container4=st.container()
+            with container3:
+                st.header("Statistics")
+                st.write(f"Max Rate: {max_rate:.2f} On Date: {max_rate_date}")
+                st.write(f"Min Rate: {min_rate:.2f} On Date: {min_rate_date}")
+                st.write(f"Average Rate: {avg_rate:.2f}")
+                st.write(f"Percentage Change: {pct_change:.2f}%" if pct_change is not None else "N/A")
+            with container4:
+                st.header("Currency Convertor")
+        
+                # Extracting currency codes without the extra details
+                from_curr_code = re.search(r"\((.*?)\)", from_curr).group(1)
+                to_curr_code = re.search(r"\((.*?)\)", to_curr).group(1)
+
+                rate = fetch_exchange_rates(from_curr_code, to_curr_code)
+
+                if rate is not None:
+                    from_val = st.number_input(from_curr_code, 0)
+                    result = from_val * rate
+                    st.subheader(f"{from_val} X {rate} = {result:.2f} {to_curr_code}")
+                else:
+                    st.warning(f"Exchange rate from {from_curr_code} to {to_curr_code} is not available.")
+        
 
     else:
         st.warning(f"The selected currencies ({from_curr}, {to_curr}) are not available in the dataset.")
-
-    # Currency Calculator
-    # Currency Calculator
-    with col8:
-        st.header("Currency Converter")
-        
-        # Extracting currency codes without the extra details
-        from_curr_code = re.search(r"\((.*?)\)", from_curr).group(1)
-        to_curr_code = re.search(r"\((.*?)\)", to_curr).group(1)
-
-        rate = fetch_exchange_rates(from_curr_code, to_curr_code)
-
-        if rate is not None:
-            from_val = st.number_input(from_curr_code, 0)
-            result = from_val * rate
-            st.subheader(f"{from_val} X {rate} = {result:.2f} {to_curr_code}")
-        else:
-            st.warning(f"Exchange rate from {from_curr_code} to {to_curr_code} is not available.")
-
-
-
 
 if __name__ == "__main__":
     main()
