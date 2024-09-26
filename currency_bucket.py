@@ -42,7 +42,7 @@ def main():
 
     # Input currency distribution
     st.write("### Create your Custom Currency Basket:")
-    currencies = st.multiselect("Select Currencies", options=CURRENCY_LIST, default=["USD"])
+    currencies = st.multiselect("Select Currencies", options=CURRENCY_LIST)
     weights = {}
 
     # User input for weights
