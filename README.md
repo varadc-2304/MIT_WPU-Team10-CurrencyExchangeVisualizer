@@ -14,6 +14,7 @@ Exchangify is an innovative Streamlit application designed to simplify the manag
 - **Python**: The primary programming language used for developing the application logic.
 - **MongoDB**: For storing and managing exchange rate data efficiently.
 - **Exchange Rate API**: To fetch real-time exchange rates for currency comparisons and conversions.
+- **Streamlit Community Cloud**: The app has been deployed using Streamlit Community Cloud.
 
 ## Features
 
