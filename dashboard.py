@@ -33,7 +33,7 @@ def main():
             to_curr = st.selectbox("To", currency_list)
         with col5:
             duration = st.selectbox("Duration", ["Duration", "Week", "Month", "Quarter", "Year"])
-            end_date = datetime(2024,9,25)
+            end_date = datetime(2024,9,24)
             if duration == "Week":
                 start_date = end_date - timedelta(days=7)
             elif duration == "Month":
